@@ -29,8 +29,7 @@ public class gameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
-        Time.timeScale = 0;//"stop it , don't fly away fukking eye !! "
+        Time.timeScale = 0;
         isEndGame = false;
         wallArray = GameObject.FindGameObjectsWithTag("wall");
         floor = GameObject.FindGameObjectWithTag("floor");
@@ -62,7 +61,7 @@ public class gameController : MonoBehaviour
 
     public void Endgame()
     {
-        Time.timeScale = 0;//stop the fukking game
+        Time.timeScale = 0;//stop the game
         Debug.Log("EndGame");
         isEndGame = true;
         txtPanelPoint.text = "Score: " + gamePoint.ToString();
