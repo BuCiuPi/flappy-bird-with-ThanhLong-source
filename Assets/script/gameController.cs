@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,22 +9,24 @@ using TMPro;
 
 public class gameController : MonoBehaviour
 {
-    bool isEndGame;
-    int gamePoint = 0;
-    public int reversePoint = 10;
-    public TextMeshPro txtPoint;
+    private const int DEFAULT_NULL_VALUE_INT = -999;
 
-    public GameObject panelEndGame;
-    public TextMeshProUGUI txtPanelPoint;
+    bool isEndGame;
+    private int _currentScore = 0;
+    public int reversePoint = 10;
+    public TextMeshProUGUI txtPoint;
+
+    [SerializeField] private UIMainEndGame _panelEndGame;
+    [SerializeField] private UIMainStartPanel _panelStart;
     public GameObject resetPointLeft;
     public GameObject resetPointRight;
-    public GameObject tutorial;
+    
     public GameObject backgroundCity;
     public List<GameObject> wall;
 
     GameObject[] wallArray;
     GameObject floor;
-    
+
 
 
     // Start is called before the first frame update
@@ -42,7 +45,7 @@ public class gameController : MonoBehaviour
         if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && isEndGame == false)
         {
             Time.timeScale = 1;
-            tutorial.SetActive(false);
+            _panelStart.Hide();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -61,27 +64,47 @@ public class gameController : MonoBehaviour
 
     public void Endgame()
     {
-        Time.timeScale = 0;//stop the game
-        Debug.Log("EndGame");
+        Time.timeScale = 0;
         isEndGame = true;
-        txtPanelPoint.text = "Score: " + gamePoint.ToString();
-        panelEndGame.SetActive(true);
+
+        int HightScore = CheckHighScore();
+        HightScore = HightScore == DEFAULT_NULL_VALUE_INT ? 0 : HightScore;
+        _panelEndGame.ShowHighScore(HightScore);
+        _panelEndGame.ShowNewScore(_currentScore);
+        _panelEndGame.Show();
     }
+
+    private int CheckHighScore()
+    {
+        int HightScore = PlayerPrefs.GetInt("HightScore", DEFAULT_NULL_VALUE_INT);
+        if (HightScore == DEFAULT_NULL_VALUE_INT)
+        {
+            if (_currentScore > HightScore)
+            {
+                PlayerPrefs.SetInt("HightScore", _currentScore);
+
+            }
+            return HightScore;
+        }
+
+        return DEFAULT_NULL_VALUE_INT;
+    }
+
     public void restart()
     {
         SceneManager.LoadScene(0);
     }
 
     bool switchOn = false;
-    public bool toiletGoToLeft = false; 
+    public bool toiletGoToLeft = false;
     public void getPoint()
     {
         // game point set
-        gamePoint++;
-        txtPoint.text = gamePoint.ToString();
+        _currentScore++;
+        txtPoint.text = _currentScore.ToString();
 
         // stop reset wall
-         if (gamePoint >= reversePoint - 2 && switchOn == false)
+        if (_currentScore >= reversePoint - 2 && switchOn == false)
         {
             if (!toiletGoToLeft)
             {
@@ -99,13 +122,13 @@ public class gameController : MonoBehaviour
 
             if (toiletGoToLeft)
             {
-                if (resetPointRight.activeSelf )
+                if (resetPointRight.activeSelf)
                 {
-                resetPointRight.SetActive(false);
+                    resetPointRight.SetActive(false);
                 }
                 else
                 {
-                resetPointRight.SetActive(true);
+                    resetPointRight.SetActive(true);
                 }
 
 
@@ -118,8 +141,8 @@ public class gameController : MonoBehaviour
             Debug.Log("turn off wall respawn");
         }
 
-        
-        if (gamePoint == reversePoint)
+
+        if (_currentScore == reversePoint)
         {
             if (toiletGoToLeft)
             {
@@ -130,10 +153,10 @@ public class gameController : MonoBehaviour
                 toiletGoToLeft = true;
             }
             setIsStop(true);
-            reversePoint = reversePoint + Random.Range(5, 11);
+            reversePoint = reversePoint + UnityEngine.Random.Range(5, 11);
             switchOn = false;
-            
-        } 
+
+        }
     }
 
     public void setIsStop(bool value)
@@ -148,13 +171,13 @@ public class gameController : MonoBehaviour
         {
             floor.GetComponent<backgroundMove>().moveSpeed = 0;
         }
-        
+
     }
 
     public void ReverseWall()
     {
-        
-        
+
+
         foreach (GameObject item in wallArray)
         {
             item.GetComponent<wallMove>().reverseMoveSpeed();
@@ -166,7 +189,7 @@ public class gameController : MonoBehaviour
             break;
         }
 
-        
+
 
         if (!toiletGoToLeft)
         {
