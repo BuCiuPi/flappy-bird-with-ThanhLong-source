@@ -18,14 +18,18 @@ public class gameController : MonoBehaviour
 
     [SerializeField] private UIMainEndGame _panelEndGame;
     [SerializeField] private UIMainStartPanel _panelStart;
+
+    [SerializeField] private BackgroundMove _floor;
+    [SerializeField] private BackgroundCityMove backgroundCity;
+
     public GameObject resetPointLeft;
     public GameObject resetPointRight;
     
-    public GameObject backgroundCity;
+
     public List<GameObject> wall;
 
     GameObject[] wallArray;
-    GameObject floor;
+
 
 
 
@@ -35,7 +39,6 @@ public class gameController : MonoBehaviour
         Time.timeScale = 0;
         isEndGame = false;
         wallArray = GameObject.FindGameObjectsWithTag("wall");
-        floor = GameObject.FindGameObjectWithTag("floor");
     }
 
 
@@ -57,9 +60,6 @@ public class gameController : MonoBehaviour
             }
             Debug.Log("reverse");
         }
-
-
-
     }
 
     public void Endgame()
@@ -167,9 +167,9 @@ public class gameController : MonoBehaviour
             item.GetComponent<wallMove>().isStop = value;
             Debug.Log("wall is stop");
         }
-        if (floor.GetComponent<backgroundMove>().moveSpeed != 0)
+        if (_floor.GetComponent<BackgroundMove>().moveSpeed != 0)
         {
-            floor.GetComponent<backgroundMove>().moveSpeed = 0;
+            _floor.GetComponent<BackgroundMove>().moveSpeed = 0;
         }
 
     }
@@ -184,8 +184,8 @@ public class gameController : MonoBehaviour
         }
         foreach (GameObject item in wallArray)
         {
-            floor.GetComponent<backgroundMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
-            backgroundCity.GetComponent<backgroundCityMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
+            _floor.GetComponent<BackgroundMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
+            backgroundCity.GetComponent<BackgroundCityMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
             break;
         }
 

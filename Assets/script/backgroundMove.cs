@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class backgroundMove : MonoBehaviour
+public class BackgroundMove : MonoBehaviour
 {
     public float moveSpeed = 3;
 
