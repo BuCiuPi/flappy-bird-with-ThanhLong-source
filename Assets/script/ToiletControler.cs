@@ -60,7 +60,6 @@ public class ToiletControler : MonoBehaviour
                     obj.transform.eulerAngles = new Vector3(0, 0, 0);
                 }
 
-                Debug.Log("reverse Player");
             }
         }
 
@@ -93,7 +92,6 @@ public class ToiletControler : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(" point++ ");
         gameController.GetComponent<gameController>().getPoint();
     }
 }

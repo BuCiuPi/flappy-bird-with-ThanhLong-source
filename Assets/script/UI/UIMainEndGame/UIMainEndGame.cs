@@ -1,21 +1,54 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIMainEndGame : UIPanel
 {
-    [SerializeField] private TextMeshProUGUI TxtNewScore;
-    [SerializeField] private TextMeshProUGUI TxtHightScore;
+    [Space]
+    [SerializeField] private TextMeshProUGUI _txtNewScore;
+    [SerializeField] private TextMeshProUGUI _txtHightScore;
+    [SerializeField] private GameObject _congratulationBanner;
 
-    public void ShowNewScore(int score)
+    [Header("Button")]
+    [SerializeField] private Button _restartButton;
+
+    public UnityEvent RestartGameEvent;
+
+    private void OnEnable()
     {
-        TxtNewScore.text = score.ToString();
+        _restartButton.onClick.AddListener(OnRestartGame);
     }
 
-    public void ShowHighScore(int score)
+    private void OnDisable()
     {
-        TxtHightScore.text = score.ToString();
+        _restartButton.onClick.RemoveListener(OnRestartGame);
     }
+
+    private void OnRestartGame()
+    {
+        RestartGameEvent.Invoke();
+    }
+
+    private void ShowNewScore(int score)
+    {
+        _txtNewScore.text = score.ToString();
+    }
+
+    private void ShowHighScore(int score)
+    {
+        _txtHightScore.text = score.ToString();
+    }
+
+    public void ShowScore(int hightScore, int currentScore)
+    {
+        ShowHighScore(hightScore);
+        ShowNewScore(currentScore);
+        _congratulationBanner.SetActive(currentScore > hightScore);
+    }
+
+
 }

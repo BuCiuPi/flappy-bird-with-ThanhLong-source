@@ -24,14 +24,21 @@ public class gameController : MonoBehaviour
 
     public GameObject resetPointLeft;
     public GameObject resetPointRight;
-    
+
 
     public List<GameObject> wall;
 
     GameObject[] wallArray;
 
 
-
+    private void OnEnable()
+    {
+        _panelEndGame.RestartGameEvent.AddListener(RestartGame);
+    }
+    private void OnDisable()
+    {
+        _panelEndGame.RestartGameEvent.RemoveListener(RestartGame);
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -67,30 +74,23 @@ public class gameController : MonoBehaviour
         Time.timeScale = 0;
         isEndGame = true;
 
-        int HightScore = CheckHighScore();
-        HightScore = HightScore == DEFAULT_NULL_VALUE_INT ? 0 : HightScore;
-        _panelEndGame.ShowHighScore(HightScore);
-        _panelEndGame.ShowNewScore(_currentScore);
+        int hightScore = CheckHighScore();
+        hightScore = hightScore == DEFAULT_NULL_VALUE_INT ? 0 : hightScore;
+        _panelEndGame.ShowScore(hightScore, _currentScore);
         _panelEndGame.Show();
     }
 
     private int CheckHighScore()
     {
         int HightScore = PlayerPrefs.GetInt("HightScore", DEFAULT_NULL_VALUE_INT);
-        if (HightScore == DEFAULT_NULL_VALUE_INT)
+        if (_currentScore > HightScore)
         {
-            if (_currentScore > HightScore)
-            {
-                PlayerPrefs.SetInt("HightScore", _currentScore);
-
-            }
-            return HightScore;
+            PlayerPrefs.SetInt("HightScore", _currentScore);
         }
-
-        return DEFAULT_NULL_VALUE_INT;
+        return HightScore;
     }
 
-    public void restart()
+    public void RestartGame()
     {
         SceneManager.LoadScene(0);
     }
@@ -138,7 +138,6 @@ public class gameController : MonoBehaviour
             // after this switch ON, then 
             switchOn = true;
 
-            Debug.Log("turn off wall respawn");
         }
 
 
@@ -165,7 +164,6 @@ public class gameController : MonoBehaviour
         foreach (GameObject item in wallArray)
         {
             item.GetComponent<wallMove>().isStop = value;
-            Debug.Log("wall is stop");
         }
         if (_floor.GetComponent<BackgroundMove>().moveSpeed != 0)
         {
@@ -220,4 +218,15 @@ public class gameController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        PlayerPrefs.DeleteAll();
+    }
+#endif
 }
