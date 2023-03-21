@@ -48,8 +48,8 @@ public class ToiletControler : MonoBehaviour
             if ( Mathf.Abs(obj.transform.position.x) > 2f)
             {
 
-                gameController.GetComponent<gameController>().setIsStop(false);
-                gameController.GetComponent<gameController>().ReverseWall();
+                gameController.GetComponent<GameController>().setIsStop(false);
+                gameController.GetComponent<GameController>().ReverseWall();
 
                 if (obj.transform.position.x > 0)
                 {
@@ -86,12 +86,12 @@ public class ToiletControler : MonoBehaviour
 
     void endgame()
     {
-        gameController.GetComponent<gameController>().Endgame();// call end game function in gameController
+        gameController.GetComponent<GameController>().Endgame();// call end game function in gameController
 
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        gameController.GetComponent<gameController>().getPoint();
+        gameController.GetComponent<GameController>().getPoint();
     }
 }

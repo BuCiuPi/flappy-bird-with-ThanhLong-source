@@ -7,28 +7,25 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
-public class gameController : MonoBehaviour
+public class GameController : MonoBehaviour
 {
     private const int DEFAULT_NULL_VALUE_INT = -999;
 
-    bool isEndGame;
+    private bool _isEndGame;
     private int _currentScore = 0;
-    public int reversePoint = 10;
-    public TextMeshProUGUI txtPoint;
+    private int _reversePoint = 10;
+    [SerializeField] private TextMeshProUGUI _txtPoint;
 
     [SerializeField] private UIMainEndGame _panelEndGame;
     [SerializeField] private UIMainStartPanel _panelStart;
 
-    [SerializeField] private BackgroundMove _floor;
-    [SerializeField] private BackgroundCityMove backgroundCity;
+    [SerializeField] private BackgroundMoveControl _floor;
+    [SerializeField] private CityBackgroundMovementControl _CityBackgroundMove;
 
-    public GameObject resetPointLeft;
-    public GameObject resetPointRight;
+    [SerializeField] private GameObject _resetPointLeft;
+    [SerializeField] private GameObject _resetPointRight;
 
-
-    public List<GameObject> wall;
-
-    GameObject[] wallArray;
+    [SerializeField] private wallMove[] _wallArray;
 
 
     private void OnEnable()
@@ -39,40 +36,51 @@ public class gameController : MonoBehaviour
     {
         _panelEndGame.RestartGameEvent.RemoveListener(RestartGame);
     }
-
-    // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 0;
-        isEndGame = false;
-        wallArray = GameObject.FindGameObjectsWithTag("wall");
+        _isEndGame = false;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
-        if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && isEndGame == false)
-        {
-            Time.timeScale = 1;
-            _panelStart.Hide();
-        }
 
+        GetInput();
+#if UNITY_EDITOR
+        GetDebugInput();
+#endif
+    }
+
+    private void GetDebugInput()
+    {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            foreach (GameObject item in wallArray)
+            foreach (wallMove item in _wallArray)
             {
-                item.GetComponent<wallMove>().reverseMoveSpeed();
-
+                item.reverseMoveSpeed();
             }
             Debug.Log("reverse");
         }
     }
 
+    private void GetInput()
+    {
+        if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && _isEndGame == false)
+        {
+            StartGame();
+        }
+    }
+
+    private void StartGame()
+    {
+        Time.timeScale = 1;
+        _panelStart.Hide();
+    }
+
     public void Endgame()
     {
         Time.timeScale = 0;
-        isEndGame = true;
+        _isEndGame = true;
 
         int hightScore = CheckHighScore();
         hightScore = hightScore == DEFAULT_NULL_VALUE_INT ? 0 : hightScore;
@@ -101,20 +109,20 @@ public class gameController : MonoBehaviour
     {
         // game point set
         _currentScore++;
-        txtPoint.text = _currentScore.ToString();
+        _txtPoint.text = _currentScore.ToString();
 
         // stop reset wall
-        if (_currentScore >= reversePoint - 2 && switchOn == false)
+        if (_currentScore >= _reversePoint - 2 && switchOn == false)
         {
             if (!toiletGoToLeft)
             {
-                if (resetPointLeft.activeSelf)
+                if (_resetPointLeft.activeSelf)
                 {
-                    resetPointLeft.SetActive(false);
+                    _resetPointLeft.SetActive(false);
                 }
                 else
                 {
-                    resetPointLeft.SetActive(true);
+                    _resetPointLeft.SetActive(true);
                 }
 
             }
@@ -122,13 +130,13 @@ public class gameController : MonoBehaviour
 
             if (toiletGoToLeft)
             {
-                if (resetPointRight.activeSelf)
+                if (_resetPointRight.activeSelf)
                 {
-                    resetPointRight.SetActive(false);
+                    _resetPointRight.SetActive(false);
                 }
                 else
                 {
-                    resetPointRight.SetActive(true);
+                    _resetPointRight.SetActive(true);
                 }
 
 
@@ -141,7 +149,7 @@ public class gameController : MonoBehaviour
         }
 
 
-        if (_currentScore == reversePoint)
+        if (_currentScore == _reversePoint)
         {
             if (toiletGoToLeft)
             {
@@ -152,7 +160,7 @@ public class gameController : MonoBehaviour
                 toiletGoToLeft = true;
             }
             setIsStop(true);
-            reversePoint = reversePoint + UnityEngine.Random.Range(5, 11);
+            _reversePoint = _reversePoint + UnityEngine.Random.Range(5, 11);
             switchOn = false;
 
         }
@@ -161,13 +169,14 @@ public class gameController : MonoBehaviour
     public void setIsStop(bool value)
     {
         // set stop for all wall
-        foreach (GameObject item in wallArray)
+        foreach (wallMove item in _wallArray)
         {
-            item.GetComponent<wallMove>().isStop = value;
+            item.isStop = value;
         }
-        if (_floor.GetComponent<BackgroundMove>().moveSpeed != 0)
+
+        if (_floor.GetComponent<BackgroundMoveControl>().moveSpeed != 0)
         {
-            _floor.GetComponent<BackgroundMove>().moveSpeed = 0;
+            _floor.GetComponent<BackgroundMoveControl>().moveSpeed = 0;
         }
 
     }
@@ -176,14 +185,14 @@ public class gameController : MonoBehaviour
     {
 
 
-        foreach (GameObject item in wallArray)
+        foreach (wallMove item in _wallArray)
         {
             item.GetComponent<wallMove>().reverseMoveSpeed();
         }
-        foreach (GameObject item in wallArray)
+        foreach (wallMove item in _wallArray)
         {
-            _floor.GetComponent<BackgroundMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
-            backgroundCity.GetComponent<BackgroundCityMove>().moveSpeed = item.GetComponent<wallMove>().moveSpeed;
+            _floor.GetComponent<BackgroundMoveControl>().moveSpeed = item.moveSpeed;
+            _CityBackgroundMove.GetComponent<CityBackgroundMovementControl>().moveSpeed = item.moveSpeed;
             break;
         }
 
@@ -191,13 +200,13 @@ public class gameController : MonoBehaviour
 
         if (!toiletGoToLeft)
         {
-            if (resetPointLeft.activeSelf)
+            if (_resetPointLeft.activeSelf)
             {
-                resetPointLeft.SetActive(false);
+                _resetPointLeft.SetActive(false);
             }
             else
             {
-                resetPointLeft.SetActive(true);
+                _resetPointLeft.SetActive(true);
             }
 
         }
@@ -205,13 +214,13 @@ public class gameController : MonoBehaviour
 
         if (toiletGoToLeft)
         {
-            if (resetPointRight.activeSelf)
+            if (_resetPointRight.activeSelf)
             {
-                resetPointRight.SetActive(false);
+                _resetPointRight.SetActive(false);
             }
             else
             {
-                resetPointRight.SetActive(true);
+                _resetPointRight.SetActive(true);
             }
 
 

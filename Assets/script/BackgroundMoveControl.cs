@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BackgroundMove : MonoBehaviour
+public class BackgroundMoveControl : MonoBehaviour
 {
     public float moveSpeed = 3;
 
@@ -22,9 +22,9 @@ public class BackgroundMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        obj.transform.Translate(new Vector3(-moveSpeed * Time.deltaTime,0, obj.transform.position.z)); //move the background , change by movespeed
-        
-        if(Mathf.Abs(Vector3.Distance(oldPosition, obj.transform.position)) > backgroundRange) //create a infinity background
+        obj.transform.Translate(new Vector3(-moveSpeed * Time.deltaTime, 0, obj.transform.position.z)); //move the background , change by movespeed
+
+        if (Mathf.Abs(Vector3.Distance(oldPosition, obj.transform.position)) > backgroundRange) //create a infinity background
         {
             obj.transform.position = oldPosition;
         }

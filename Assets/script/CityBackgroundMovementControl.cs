@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BackgroundCityMove : MonoBehaviour
+public class CityBackgroundMovementControl : MonoBehaviour
 {
     private GameObject obj;
 
